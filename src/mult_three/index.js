@@ -1,16 +1,19 @@
 'use strict';
 
+const aws = require('aws-sdk');
+const dynamoStreams = require('dynamo-streams');
+
+const mult_three = require('./mult_three.js');
+
 module.exports.handler = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
-
-  callback(null, response);
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+  const dbStreams = dynamoStreams(new aws.DynamoDB);
+  const put = dbStreams.createPutStream({TableName: "multiplied"});
+  const unmarshall = aws.DynamoDB.Converter.unmarshall;
+  const records = event.Records.map(record => Object.assign(record, {
+    dynamodb: Object.assign(record.dynamodb, {
+      Keys: unmarshall(record.dynamodb.Keys),
+      NewImage: unmarshall(record.dynamodb.NewImage)
+    })
+  }));
+  mult_three(put, records).then((result) => callback(null, result))
 };
