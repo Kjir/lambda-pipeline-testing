@@ -7,5 +7,10 @@
   "dependencies": {
     "aws-sdk": "^2.254.1",
     "dynamo-streams": "^1.2.2"
+  },
+  "devDependencies": {
+    "prettier": "^1.13.5",
+    "serverless-mocha-plugin": "^1.8.3",
+    "sinon": "^5.1.1"
   }
 }

@@ -74,16 +74,20 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
+  mult_three:
+    handler: src/mult_three/index.handler
+    package:
+      include:
+        - src/mult_three/**
   add_five:
-    handler: handler.add_five
+    handler: src/add_five/index.handler
     package:
       exclude:
         - Dockerfile
         - sls
         - docker-compose.yml
       include:
-        - handler.js
-        - add_five.js
+        - src/add_five/**
     events:
       - stream:
           type: dynamodb
@@ -147,3 +151,6 @@ resources:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+
+plugins:
+  - serverless-mocha-plugin

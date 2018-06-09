@@ -1,4 +1,3 @@
-
 module.exports = (put, records) => {
   put.on('error', console.error);
   records.filter(record => record.eventName == 'INSERT').forEach((record) => {
