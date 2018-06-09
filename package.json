@@ -1,0 +1,11 @@
+{
+  "name": "lambda-pipeline-testing",
+  "version": "1.0.0",
+  "main": "src/add_five/handler.js",
+  "author": "Stéphane Bisinger <stephane.bisinger@protonmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.254.1",
+    "dynamo-streams": "^1.2.2"
+  }
+}
