@@ -5,6 +5,4 @@ services:
     build: .
     volumes:
       - .:/app
-    environment:
-      AWS_ACCESS_KEY_ID: 'XXXXXXXXXXXXXXXXXXXX'
-      AWS_SECRET_ACCESS_KEY: 'none'
+    env_file: .env
