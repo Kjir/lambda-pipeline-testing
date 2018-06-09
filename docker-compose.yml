@@ -1,0 +1,10 @@
+version: '3.6'
+
+services:
+  lambda-tester:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      AWS_ACCESS_KEY_ID: 'XXXXXXXXXXXXXXXXXXXX'
+      AWS_SECRET_ACCESS_KEY: 'none'
