@@ -9,6 +9,7 @@
     "dynamo-streams": "^1.2.2"
   },
   "devDependencies": {
+    "aws-sdk-mock": "^2.0.0",
     "prettier": "^1.13.5",
     "serverless-mocha-plugin": "^1.8.3",
     "sinon": "^5.1.1"
