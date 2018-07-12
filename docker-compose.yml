@@ -6,3 +6,7 @@ services:
     volumes:
       - .:/app
     env_file: .env
+    depends_on:
+      - dynamodb
+  dynamodb:
+    image: cnadiminti/dynamodb-local

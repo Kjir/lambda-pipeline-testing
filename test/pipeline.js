@@ -1,6 +1,13 @@
 "use strict";
 
 const aws = require("aws-sdk");
+aws.config.update({
+  region: "eu-west-1",
+  endpoint: "http://dynamodb:8000"
+});
+const dynamodb = new aws.DynamoDB();
+const docClient = new aws.DynamoDB.DocumentClient({ service: dynamodb });
+
 const mochaPlugin = require("serverless-mocha-plugin");
 const pipeline_mock = require("../pipeline_mock.js");
 
@@ -11,33 +18,32 @@ const mult_three = require(process.env.SERVERLESS_TEST_ROOT +
   "/src/mult_three/index.js");
 
 describe("pipeline", () => {
-  const pipeline = new pipeline_mock.Pipeline();
-  before(done => {
-    pipeline
+  const pipeline = new pipeline_mock.Pipeline(
+    dynamodb,
+    new aws.DynamoDBStreams()
+  );
+  before(async () => {
+    await pipeline
       .dynamodb("numbers", { hash: { name: "value", type: "N" } })
       .stream("numbers", add_five)
       .dynamodb("incremented", { hash: { name: "value", type: "N" } })
       .stream("incremented", mult_three)
-      .dynamodb("multiplied", { hash: { name: "value", type: "N" } });
-    done();
+      .dynamodb("multiplied", { hash: { name: "value", type: "N" } })
+      .waitForAll();
   });
 
-  after(done => {
-    pipeline.destroy();
-    done();
-  });
+  after(async () => await pipeline.destroy());
 
-  it("transforms 9 into 42", done => {
-    const docClient = new aws.DynamoDB.DocumentClient();
-    docClient.put({ TableName: "numbers", Item: { value: 9 } }, (err, data) => {
-      docClient.get(
-        { TableName: "multiplied", Key: { value: 42 } },
-        (err, data) => {
-          console.log(err, data);
-          expect(data.Item.value).to.be.equal(42);
-          done();
-        }
-      );
-    });
+  it("transforms 9 into 42", async () => {
+    await docClient.put({ TableName: "numbers", Item: { value: 9 } }).promise();
+    const val = await pipeline.processStream();
+    const data = await docClient
+      .get({
+        TableName: "multiplied",
+        Key: { value: 42 }
+      })
+      .promise();
+    console.log(data);
+    expect(data.Item.value).to.be.equal(42);
   });
 });

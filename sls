@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker-compose run lambda-tester serverless $*
+docker-compose run --rm lambda-tester serverless $*
