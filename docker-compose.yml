@@ -9,4 +9,6 @@ services:
     depends_on:
       - dynamodb
   dynamodb:
-    image: cnadiminti/dynamodb-local
+    build:
+      context: .
+      dockerfile: devops/dynamodb-local/Dockerfile
