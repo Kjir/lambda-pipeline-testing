@@ -22,6 +22,10 @@ describe("pipeline", () => {
     dynamodb,
     new aws.DynamoDBStreams()
   );
+
+  const sleep = async millis =>
+    new Promise(resolve => setTimeout(resolve, millis));
+
   before(async () => {
     await pipeline
       .dynamodb("numbers", { hash: { name: "value", type: "N" } })
@@ -36,14 +40,16 @@ describe("pipeline", () => {
 
   it("transforms 9 into 42", async () => {
     await docClient.put({ TableName: "numbers", Item: { value: 9 } }).promise();
-    const val = await pipeline.processStream();
+    await pipeline.processTable("numbers");
+    await sleep(50);
+    await pipeline.processTable("incremented");
+    await sleep(50);
     const data = await docClient
       .get({
         TableName: "multiplied",
         Key: { value: 42 }
       })
       .promise();
-    console.log(data);
     expect(data.Item.value).to.be.equal(42);
   });
 });
